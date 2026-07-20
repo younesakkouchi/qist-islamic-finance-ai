@@ -47,6 +47,7 @@ The guiding principle is **grounding**: every Shariah judgement the system issue
 
 - [Demo](#demo)
 - [What it does](#what-it-does)
+- [What's different about this](#whats-different-about-this)
 - [Architecture](#architecture)
 - [How it works](#how-it-works)
 - [Evaluation](#evaluation)
@@ -69,6 +70,22 @@ Paste or upload a contract (PDF / DOCX / text) and check it against the standard
 Chat-driven, AAOIFI-compliant contract drafting. The system detects intent, asks dynamic (RAG-powered) or static-fallback clarifying questions when a request lacks detail, and drafts from a **two-source architecture** (retrieved AAOIFI rules as the enforcement primitive + Monzer Kahf practitioner templates as structural scaffolding). Supports refinement, PDF/DOCX export, side-panel editing with diff and version tracking, and one-click inline verification with fix-from-findings.
 
 The full indexed corpus (127 standards, 2,327 chunks) is browsable and manageable from the admin console, alongside the evaluation dashboard.
+
+---
+
+## What's different about this
+
+Most retrieval projects stop at "the answer cites a source." A compliance tool has to survive being wrong, so the engineering went into the parts that fail safely, and into the evidence that they do.
+
+**The rulings live in the corpus, not the code.** Each of the 64 checklist rules stores only three things in code: the standard sections it anchors to, a pre-assigned severity, and a focusing paraphrase. The binding ruling text is retrieved live from the corpus at judgement time, and the model is never asked to invent a citation, only to judge whether a stated rule is met. Correcting or extending the Shariah content is a corpus change, not a code change.
+
+**The generator and the verifier share one rule set.** The verifier's checklist is extracted from the generator's own rule fragments, so a drafted contract and the standard it is measured against are two views of the same source. That closes, by construction, the failure mode where a verifier quietly checks different provisions than the generator enforces.
+
+**Every critical ijara check is un-dodgeable, because the first design failed.** A conditional check can be evaded by mis-describing the contract. I built a substring dodge-guard to catch that, then adversarially red-teamed it: 4% recall on paraphrased dodges, 0% on one variant, and 22% false-fire on legitimate negated operating leases. Rather than patch a guard that did not work, it was discarded and the rules restructured so that no critical ijara check is conditional at all (64 rules total: 51 base, 13 conditional).
+
+**The ground truth was built to resist the author.** A self-generated benchmark flatters the system that produced it. So the 92-contract verification set was labelled adversarially: independent agents re-derived every label from the rule text *without sight of the assigned label*, disagreements were adjudicated, and four disputed cases were escalated to the supervising scholar. 60 of the 92 contracts are built on real institutional templates (SBP, CIMB, Bank Muscat Meethaq, Kahf), so the ground truth does not originate entirely with me.
+
+**Measured per layer, not asserted.** Three purpose-built gold sets (103 retrieval queries, 32 generation questions, 92 contracts), a four-rung ablation that attributes recall to each design layer instead of reporting one lumped gain, a reranking weight confirmed by five-fold cross-validation, and a stability study that re-verifies every contract five times (about 455 runs) to separate "reproducible" from "correct."
 
 ---
 
