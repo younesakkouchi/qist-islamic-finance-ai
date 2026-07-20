@@ -18,7 +18,7 @@ QIST unifies three services over a single corpus of the AAOIFI Islamic-finance s
 
 The guiding principle is **grounding**: every Shariah judgement the system issues, whether an answer, a verification finding, or a generated clause, is derived from a corpus passage retrieved at the moment it is needed and is traceable to a specific standard and section. The authoritative rulings live in the corpus, not in application code. Across the six families, the verifier reported **no defective contract as compliant** on any of the 91 scored fixtures.
 
-> This was my end-of-studies engineering project (State Engineer + Master's, National Polytechnic School of Algiers), built during an internship at ThynkTechDz and defended with the jury's commendation (17.75/20). I started it without knowing what an LLM or a RAG pipeline was and taught myself the full stack to ship it.
+> This was my end-of-studies engineering project (State Engineer + Master's, National Polytechnic School of Algiers), built during an internship at ThynkTechDz and defended with the jury's commendation (17.75/20). I began it with no hands-on experience building retrieval or LLM systems and no background in Islamic finance, and taught myself both to ship it.
 
 > **Source access:** this repository presents the system design and results. The full source is maintained privately while the project is being taken toward commercialization, and is available for a walkthrough or review on request.
 
