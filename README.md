@@ -9,7 +9,6 @@
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-Vite%206-3178C6?logo=typescript&logoColor=white">
   <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white">
   <img alt="ChromaDB" src="https://img.shields.io/badge/ChromaDB-vector%20store-FF6F61">
-  <img alt="RAG" src="https://img.shields.io/badge/RAG-LLM--as--judge-8A2BE2">
   <img alt="Tests" src="https://img.shields.io/badge/tests-470%2B-2E8B57">
 </p>
 
