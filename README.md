@@ -27,10 +27,9 @@ The guiding principle is **grounding**: every Shariah judgement the system issue
 
 ## Demo
 
-<!-- VIDEO: drag the demo file into the GitHub README editor; GitHub uploads it and inserts a
-     https://github.com/user-attachments/assets/... URL. Put that URL on its own line here. -->
+[![QIST: full system demo](https://img.youtube.com/vi/vMkaDsl3pbo/maxresdefault.jpg)](https://youtu.be/vMkaDsl3pbo)
 
-_Demo video: full walkthrough of the system end to end._
+**[Watch the full system demo](https://youtu.be/vMkaDsl3pbo)** (YouTube)
 
 **What the walkthrough shows, in order:**
 
@@ -220,27 +219,64 @@ The reranking weight is confirmed by 5-fold cross-validation (mean 0.914, sd 0.0
 islamic-finance-ai/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py                      # FastAPI entry (CORS, lifespan validation, routers)
-│   │   ├── config.py                    # settings (SMTP, OAuth, Cerebras key slots)
-│   │   ├── models/  schemas/  routers/  # data models, IO schemas, HTTP routes
+│   │   ├── main.py                        # FastAPI entry: CORS, lifespan validation, routers
+│   │   ├── config.py                      # pydantic-settings: SMTP, OAuth, Cerebras key slots
+│   │   ├── database.py                    # async SQLAlchemy engine + session
+│   │   ├── dependencies.py                # get_current_user / require_admin
+│   │   ├── models/                        # user, conversation, verification, document, eval_run
+│   │   ├── schemas/                       # auth, chat, contract, document, verification, eval_run
+│   │   ├── routers/
+│   │   │   ├── auth.py                    # register, login, Google OAuth, reset, verify-email
+│   │   │   ├── chat.py                    # conversation CRUD, /chat, /chat/stream (SSE)
+│   │   │   ├── verification.py            # POST /verify, GET /reports, DELETE /reports/{id}
+│   │   │   ├── contracts.py               # PDF / DOCX export
+│   │   │   ├── admin.py                   # document upload, corpus stats, indexed rules
+│   │   │   └── admin_eval.py              # eval run/list/get/delete, providers, SSE progress
 │   │   ├── services/
-│   │   │   ├── rag_pipeline.py          # ingest / retrieve / decompose / rerank / BM25 gap-fill
-│   │   │   ├── llm_client.py            # Cerebras key round-robin + failover + per-worker isolation
-│   │   │   ├── chatbot.py               # chat() + chat_stream(); intent detection
-│   │   │   ├── compliance_verifier.py   # rule-anchored, fail-closed verifier (per-rule LLM calls)
-│   │   │   ├── verification_checklist.py # 6-type checklists (scope + severity only, no hardcoded rulings)
-│   │   │   ├── document_processor.py    # PyMuPDF + pdfplumber; clause-aware chunker
-│   │   │   └── eval_service.py  eval_supervisor.py  eval_progress.py
-│   │   └── prompts/                     # composable generation fragments, kahf_templates, verification
+│   │   │   ├── rag_pipeline.py            # ingest, retrieve, decompose, rerank, BM25 gap-fill
+│   │   │   ├── document_processor.py      # PyMuPDF + pdfplumber; clause-aware chunker
+│   │   │   ├── llm_client.py              # key round-robin, retry/cooldown failover, isolation
+│   │   │   ├── chatbot.py                 # chat() + chat_stream(); intent routing
+│   │   │   ├── compliance_verifier.py     # rule-anchored, fail-closed verifier
+│   │   │   ├── verification_checklist.py  # 64 rule-level checks across the six contract types
+│   │   │   ├── contract_exporter.py       # markdown -> PDF / DOCX
+│   │   │   ├── auth.py                    # bcrypt hashing, JWT, reset tokens, SMTP email
+│   │   │   ├── eval_service.py            # wraps the seven evaluations for the API
+│   │   │   ├── eval_supervisor.py         # supervisor-worker orchestration across key slots
+│   │   │   └── eval_progress.py           # in-memory pub/sub feeding live SSE progress
+│   │   └── prompts/
+│   │       ├── chatbot.py                 # system prompt + message builder
+│   │       ├── contract_generation.py     # composable predicate-gated rule fragments
+│   │       ├── contract_questions.py      # per-variant clarifying question sets
+│   │       ├── kahf_templates.py          # practitioner templates + variant detection
+│   │       └── verification.py            # per-rule check + foreign-clause scan prompts
+│   ├── alembic/versions/                  # 8 migrations
+│   ├── scripts/                           # seed, bulk-ingest (FAS / Shariah / AGEB), gold-set
+│   │                                      #   assembly, retrieval + verifier diagnostics
 │   ├── eval/
-│   │   ├── gold_data/                   # retrieval (103) / generation (32) / verification (92)
-│   │   └── results/                     # reports, adjudicated verification runs, H1 checkpoints
-│   ├── scripts/                         # seed + bulk-ingest (FAS / Shariah / AGEB) + diagnostics
-│   └── tests/                           # 470+ pytest (in-memory SQLite fixtures)
-├── webpage/                             # Vite + React SPA
-│   └── src/                             # pages, components, context, lib (api, types, verdict)
-├── docker-compose.yml                   # PostgreSQL 16
-└── CLAUDE.md  DECISIONS.md              # architecture notes + decision log
+│   │   ├── eval_retrieval.py              # recall@k, MRR, NDCG over 103 gold queries
+│   │   ├── eval_generation.py             # citation recall/precision, faithfulness, LLM-judge
+│   │   ├── eval_verification.py           # finding-level P/R/F1 + verdict accuracy
+│   │   ├── retrieval_ablation.py          # four-rung ladder, per-layer recall attribution
+│   │   ├── ablation_reranking.py          # 20-config weight sweep with bootstrap CIs
+│   │   ├── verification_variance.py       # H1: five runs per contract, verdict stability
+│   │   ├── extraction_quality.py          # PDF artefact heuristics over sampled chunks
+│   │   ├── gold_data/                     # retrieval (103) / generation (32) / verification (92)
+│   │   └── results/                       # reports, adjudicated runs, H1 checkpoints
+│   └── tests/                             # 470+ pytest: rag, prompts, verifier, chatbot, API
+├── webpage/                               # React 19 + Vite SPA
+│   └── src/
+│       ├── App.tsx  main.tsx  index.css   # routes (wouter), providers, design tokens
+│       ├── pages/                         # LandingPage, Chat, Verify, Reports,
+│       │                                  #   AdminDashboard / Documents / Rules / Eval, auth
+│       ├── components/                    # AdminLayout, SignInModal, OnboardingModal,
+│       │                                  #   EvalProgressModal, EvalRunDetailView, ui/
+│       ├── context/                       # AuthContext (JWT, /me fetch), ThemeContext
+│       ├── hooks/                         # use-toast, use-mobile
+│       └── lib/                           # api.ts, auth.ts, types.ts, verdict.ts, reports.ts
+├── aaoifi-*.csv                           # ingestion source lists (FAS / Shariah / AGEB)
+├── docker-compose.yml                     # PostgreSQL 16
+└── CLAUDE.md  DECISIONS.md                # architecture notes + decision log
 ```
 
 ---
