@@ -28,7 +28,7 @@ The guiding principle is **grounding**: every Shariah judgement the system issue
 
 [![QIST: full system demo](https://img.youtube.com/vi/vMkaDsl3pbo/maxresdefault.jpg)](https://youtu.be/vMkaDsl3pbo)
 
-**[Watch the full system demo](https://youtu.be/vMkaDsl3pbo)** (YouTube)
+**[Watch the system demo](https://youtu.be/vMkaDsl3pbo)** (YouTube)
 
 **What the walkthrough shows, in order:**
 
